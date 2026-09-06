@@ -1,0 +1,5 @@
+langgraph
+anthropic
+yfinance
+streamlit
+python-dotenv
