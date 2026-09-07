@@ -1,7 +1,7 @@
 # graph.py
+from agents.news_sentiment import news_node
 from agents.fundamentals import fundamentals_node
-from typing import Optional
-from typing_extensions import TypedDict
+from typing import Optional, TypedDict
 from langgraph.graph import StateGraph, END
 
 # --- State Schema ---
@@ -17,9 +17,6 @@ class ResearchState(TypedDict):
     revision_count: int
 
 # --- Dummy Nodes ---
-def news_node(state: ResearchState) -> dict:
-    print("[news] Running news agent")
-    return {"news_summary": "Dummy news summary."}
 
 def valuation_node(state: ResearchState) -> dict:
     print(f"[valuation] Running valuation (revision #{state['revision_count']})")
