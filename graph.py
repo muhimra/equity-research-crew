@@ -1,4 +1,5 @@
 # graph.py
+from agents.fundamentals import fundamentals_node
 from typing import Optional
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, END
@@ -16,14 +17,6 @@ class ResearchState(TypedDict):
     revision_count: int
 
 # --- Dummy Nodes ---
-def fundamentals_node(state: ResearchState) -> dict:
-    print(f"[fundamentals] Running for ticker: {state['ticker']}")
-    return {
-        "company_name": "Dummy Corp",
-        "fundamentals_data": {"trailingPE": 25, "marketCap": 1e12},
-        "fundamentals_summary": "Dummy fundamentals summary."
-    }
-
 def news_node(state: ResearchState) -> dict:
     print("[news] Running news agent")
     return {"news_summary": "Dummy news summary."}
