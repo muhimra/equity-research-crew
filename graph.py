@@ -1,4 +1,5 @@
 # graph.py
+from agents.valuation import valuation_node
 from agents.news_sentiment import news_node
 from agents.fundamentals import fundamentals_node
 from typing import Optional, TypedDict
@@ -17,10 +18,6 @@ class ResearchState(TypedDict):
     revision_count: int
 
 # --- Dummy Nodes ---
-
-def valuation_node(state: ResearchState) -> dict:
-    print(f"[valuation] Running valuation (revision #{state['revision_count']})")
-    return {"valuation": "Dummy valuation output."}
 
 def critic_node(state: ResearchState) -> dict:
     print("[critic] Running critic")

@@ -37,7 +37,6 @@ def news_node(state: dict) -> dict:
     )
 
     
-    print(f"[news] Content blocks: {[block.type for block in response.content]}")
 
     news_summary = ""
     for block in response.content:
