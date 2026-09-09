@@ -48,10 +48,11 @@ def critic_node(state: dict) -> dict:
 
     print(f"[critic] Reviewing research for {ticker} (revision #{revision_count})")
 
+    model = state.get("agent_config", {}).get("critic_model", "claude-sonnet-4-5")
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     response = client.messages.create(
-        model="claude-sonnet-4-5",
+        model=model,
         max_tokens=2048,
         messages=[{
             "role": "user",

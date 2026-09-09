@@ -21,11 +21,13 @@ def news_node(state: dict) -> dict:
 
     print(f"[news] Searching for news on {company_name} ({ticker})")
 
+    model = state.get("agent_config", {}).get("news_model", "claude-sonnet-4-5")
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
+
     response = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=1024,
+        model=model,
+        max_tokens=2048,
         tools=[{"type": "web_search_20250305", "name": "web_search"}],
         messages=[{
             "role": "user",

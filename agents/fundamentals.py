@@ -19,6 +19,7 @@ Raw data:
 
 Be specific and use the actual numbers. Flag any missing data explicitly."""
 
+
 def fundamentals_node(state: dict) -> dict:
     ticker = state["ticker"]
     print(f"[fundamentals] Fetching data for {ticker}")
@@ -30,6 +31,7 @@ def fundamentals_node(state: dict) -> dict:
     print(f"[fundamentals] Got data for {company_name}, calling Claude...")
 
     # Step 2: Call Claude
+    model = state.get("agent_config", {}).get("fundamentals_model", "claude-sonnet-4-5")
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     prompt = FUNDAMENTALS_PROMPT.format(
@@ -38,7 +40,7 @@ def fundamentals_node(state: dict) -> dict:
     )
 
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model=model,
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}]
     )

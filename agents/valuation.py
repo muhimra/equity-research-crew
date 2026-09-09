@@ -1,6 +1,7 @@
 # agents/valuation.py
 import os
 import io
+import json
 import sys
 import anthropic
 from dotenv import load_dotenv
@@ -27,6 +28,20 @@ Requirements for your code:
 
 Return ONLY the Python code, no explanation, no markdown, no backticks."""
 
+COMPS_PROMPT = """You are a financial analyst writing Python code to value a stock using P/E comps.
+
+Using the following fundamentals data, write a SHORT Python script that:
+- Takes the company's trailingPE and profitMargins
+- Compares to a reasonable sector P/E (use 25x as market average)
+- Estimates fair value as: (sector_PE / trailing_PE) * marketCap
+- Prints premium/discount to fair value
+- Handles None values gracefully
+
+Fundamentals data:
+{fundamentals_json}
+
+Return ONLY plain Python code, no imports, no markdown, no backticks."""
+
 INTERPRETATION_PROMPT = """You are a financial analyst. A DCF valuation script produced the following output:
 
 {code_output}
@@ -50,10 +65,18 @@ def valuation_node(state: dict) -> dict:
     fundamentals_summary = state.get("fundamentals_summary", "")
     revision_count = state.get("revision_count", 0)
     critic_feedback = state.get("critic_feedback", "")
+    model = state.get("agent_config", {}).get("valuation_model", "claude-sonnet-4-5")
 
-    print(f"[valuation] Running valuation for {ticker} (revision #{revision_count})")
+    approach = state.get("agent_config", {}).get("valuation_approach", "dcf")
+    if approach == "comps":
+        code_prompt = COMPS_PROMPT.format(fundamentals_json=json.dumps(fundamentals_data, indent=2))
+    else:
+        code_prompt = CODE_GEN_PROMPT.format(fundamentals_json=json.dumps(fundamentals_data, indent=2))
+
+    print(f"[valuation] Running valuation for {ticker} (revision #{revision_count}) — approach: {approach}")
 
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    
 
     # Build revision context if this is a retry
     revision_context = ""
@@ -63,17 +86,14 @@ Critic feedback: {critic_feedback}
 Please explicitly address these concerns in your updated analysis."""
 
     # --- Step 1: Ask Claude to write the valuation code ---
-    import json
     print("[valuation] Generating valuation code...")
 
     code_response = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=1024,
+        model=model,
+        max_tokens=2048,
         messages=[{
             "role": "user",
-            "content": CODE_GEN_PROMPT.format(
-                fundamentals_json=json.dumps(fundamentals_data, indent=2)
-            )
+            "content": code_prompt
         }]
     )
 
@@ -129,9 +149,10 @@ Please explicitly address these concerns in your updated analysis."""
 
     # --- Step 3: Ask Claude to interpret the results ---
     print("[valuation] Generating interpretation...")
+    model = state.get("agent_config", {}).get("valuation_model", "claude-sonnet-4-5")
 
     interp_response = client.messages.create(
-        model="claude-sonnet-4-5",
+        model=model,
         max_tokens=1024,
         messages=[{
             "role": "user",

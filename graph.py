@@ -1,13 +1,12 @@
 # graph.py
-from agents.synthesis import synthesis_node
-from agents.critic import critic_node
-from agents.valuation import valuation_node
-from agents.news_sentiment import news_node
-from agents.fundamentals import fundamentals_node
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, Generator
 from langgraph.graph import StateGraph, END
+from agents.fundamentals import fundamentals_node
+from agents.news_sentiment import news_node
+from agents.valuation import valuation_node
+from agents.critic import critic_node
+from agents.synthesis import synthesis_node
 
-# --- State Schema ---
 class ResearchState(TypedDict):
     ticker: str
     company_name: Optional[str]
@@ -18,20 +17,23 @@ class ResearchState(TypedDict):
     critic_feedback: Optional[str]
     final_memo: Optional[str]
     revision_count: int
+    agent_config: Optional[dict]  # NEW
 
-
-# --- Conditional Routing ---
 def route_after_critic(state: ResearchState) -> str:
     feedback = state.get("critic_feedback", "")
     revision_count = state.get("revision_count", 0)
-    if "REVISE" in feedback and revision_count < 2:
-        print(f"[router] Critic said REVISE (count={revision_count}). Looping back.")
+    needs_revision = (
+        "REVISE" in feedback or
+        "Resubmission" in feedback or
+        "REJECT" in feedback
+    )
+    if needs_revision and revision_count < 2:
+        print(f"[router] Revision requested (count={revision_count}). Looping back.")
         return "valuation"
     else:
         print("[router] Proceeding to synthesis.")
         return "synthesis"
 
-# --- Graph Assembly ---
 def build_graph():
     graph = StateGraph(ResearchState)
     graph.add_node("fundamentals", fundamentals_node)
@@ -54,8 +56,7 @@ def build_graph():
 
 app = build_graph()
 
-# --- Entry Point ---
-def run_research(ticker: str) -> ResearchState:
+def run_research(ticker: str, agent_config: dict = None) -> ResearchState:
     initial_state = {
         "ticker": ticker,
         "company_name": None,
@@ -65,6 +66,26 @@ def run_research(ticker: str) -> ResearchState:
         "valuation": None,
         "critic_feedback": None,
         "final_memo": None,
-        "revision_count": 0
+        "revision_count": 0,
+        "agent_config": agent_config or {}
     }
     return app.invoke(initial_state)
+
+def run_research_stream(ticker: str, agent_config: dict = None) -> Generator:
+    """Yields (node_name, state_update) after each node completes."""
+    initial_state = {
+        "ticker": ticker,
+        "company_name": None,
+        "fundamentals_data": None,
+        "fundamentals_summary": None,
+        "news_summary": None,
+        "valuation": None,
+        "critic_feedback": None,
+        "final_memo": None,
+        "revision_count": 0,
+        "agent_config": agent_config or {}
+    }
+    for chunk in app.stream(initial_state):
+        # chunk = {"node_name": {state_dict}}
+        for node_name, state_update in chunk.items():
+            yield node_name, state_update

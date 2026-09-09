@@ -55,10 +55,11 @@ def synthesis_node(state: dict) -> dict:
 
     print(f"[synthesis] Writing final memo for {company_name} ({ticker})")
 
+    model = state.get("agent_config", {}).get("synthesis_model", "claude-sonnet-4-5")
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     response = client.messages.create(
-        model="claude-sonnet-4-5",
+        model=model,
         max_tokens=2048,
         messages=[{
             "role": "user",
