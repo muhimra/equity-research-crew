@@ -1,4 +1,5 @@
 # graph.py
+from agents.synthesis import synthesis_node
 from agents.critic import critic_node
 from agents.valuation import valuation_node
 from agents.news_sentiment import news_node
@@ -18,11 +19,6 @@ class ResearchState(TypedDict):
     final_memo: Optional[str]
     revision_count: int
 
-# --- Dummy Nodes ---
-
-def synthesis_node(state: ResearchState) -> dict:
-    print("[synthesis] Writing final memo")
-    return {"final_memo": "# Dummy Final Memo\n\nAll agents completed."}
 
 # --- Conditional Routing ---
 def route_after_critic(state: ResearchState) -> str:
