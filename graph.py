@@ -1,4 +1,5 @@
 # graph.py
+from agents.critic import critic_node
 from agents.valuation import valuation_node
 from agents.news_sentiment import news_node
 from agents.fundamentals import fundamentals_node
@@ -18,14 +19,6 @@ class ResearchState(TypedDict):
     revision_count: int
 
 # --- Dummy Nodes ---
-
-def critic_node(state: ResearchState) -> dict:
-    print("[critic] Running critic")
-    verdict = "APPROVE"  # Change to "REVISE: assumptions too optimistic" to test loop
-    return {
-        "critic_feedback": verdict,
-        "revision_count": state["revision_count"] + 1
-    }
 
 def synthesis_node(state: ResearchState) -> dict:
     print("[synthesis] Writing final memo")
