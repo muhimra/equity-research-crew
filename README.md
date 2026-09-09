@@ -68,7 +68,7 @@ This demonstrates a core pattern in multi-agent design: agents as reviewers, not
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/equity-research-crew.git
+git clone https://github.com/muhimra/equity-research-crew.git
 cd equity-research-crew
 
 # 2. Create and activate virtual environment
