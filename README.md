@@ -18,9 +18,7 @@ graph TD
     E -->|APPROVE| F[Synthesis Agent]
     F --> G[Final Investment Memo]
 
-    style E fill:#ff9999
-    style D fill:#99ccff
-    style F fill:#99ff99
+
 ```
 
 ## Agents
