@@ -106,6 +106,9 @@ streamlit run app.py
 >
 > Tesla's DCF intrinsic value of $111.7B versus $1.45T market cap (-92% downside) reflects the market pricing in decades of hyper-growth rather than current fundamentals. FCF of $4.84B is real but modest relative to valuation. The critic flagged missing WACC disclosure, FCF contradictions between sections, and absent sensitivity analysis — all addressed in the revised valuation. Recommend holding existing positions but not adding at current multiples without evidence of sustained FCF expansion above $20B.
 
+
+Why LangGraph: the critic/revision loop requires conditional branching back to an earlier step with a hard iteration cap — a pattern that's awkward to express as a linear chain but maps directly onto LangGraph's graph-based state machine.
+
 ## Known Limitations
 
 - Valuation is a simplified DCF/comps model — not a substitute for professional financial analysis
