@@ -4,6 +4,11 @@ A multi-agent AI system that takes a stock ticker and produces a professional in
 
 The defining feature is a **critic/revision loop** — a critic agent reviews intermediate outputs and can route the workflow back for revision before final synthesis, demonstrating real multi-agent orchestration rather than simple prompt chaining.
 
+
+
+<img width="1905" height="780" alt="equity" src="https://github.com/user-attachments/assets/129314f1-d0e9-4903-9484-056b6aa86930" />
+
+
 ---
 
 ## Architecture
